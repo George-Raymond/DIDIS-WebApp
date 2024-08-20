@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Loan Registration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Student Loan Registration</h2>
+        <form id="loanForm">
+            <div class="form-group">
+                <label for="full-name">Full Name:</label>
+                <input type="text" id="full-name" name="full_name" placeholder="Enter full name" required>
+            </div>
+            <div class="form-group">
+                <label for="institution">Institution & Program:</label>
+                <input type="text" id="institution" name="institution" placeholder="Enter institution & program" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-number">Registration Number:</label>
+                <input type="text" id="reg-number" name="registration_number" placeholder="Enter registration number" required>
+            </div>
+            <div class="form-group">
+                <label for="bank-account-number">Bank Account Number:</label>
+                <input type="text" id="bank-account-number" name="bank_account_number" placeholder="Enter bank account number" required>
+            </div>
+            <div class="form-group">
+                <label for="bank-account-name">Bank Account Name:</label>
+                <input type="text" id="bank-account-name" name="bank_account_name" placeholder="Enter bank account name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter email address" required>
+            </div>
+            <div class="form-group">
+                <label for="yos">Year Of Study:</label>
+                <input type="text" id="yos" name="last_yos" placeholder="Enter year of study" required>
+            </div>
+            <div class="form-group">
+                <label for="photo">Upload Your Photo:</label>
+                <input type="file" id="photo" name="photo" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn">Submit Application</button>
+        </form>
+        <div class="loading"></div>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        document.getElementById('loanForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            document.querySelector('.loading').style.display = 'block';
+            document.querySelector('.btn').disabled = true;
+            
+            fetch('https://19d0-41-86-178-54.ngrok-free.app/verify_user/', {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('.loading').style.display = 'none';
+                document.querySelector('.btn').disabled = false;
+                
+                const responseElement = document.getElementById('response');
+                responseElement.style.display = 'block';
+                
+                if (data.success) {
+                    responseElement.className = 'success';
+                    responseElement.textContent = 'Application submitted successfully!';
+                } else {
+                    responseElement.className = 'error';
+                    responseElement.textContent = 'Error: ' + (data.message || 'Something went wrong. Please try again.');
+                }
+            })
+            .catch(error => {
+                document.querySelector('.loading').style.display = 'none';
+                document.querySelector('.btn').disabled = false;
+                
+                const responseElement = document.getElementById('response');
+                responseElement.style.display = 'block';
+                responseElement.className = 'error';
+                responseElement.textContent = 'Error: ' + error.message;
+            });
+        });
+    </script>
+</body>
+
+</html>
